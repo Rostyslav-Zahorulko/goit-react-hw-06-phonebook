@@ -31,17 +31,16 @@
 // ____________________________________________________________________________________________________________
 
 import { createAction, nanoid } from '@reduxjs/toolkit';
-import contactsActionTypes from './contacts-action-types';
 
-const addContact = createAction(contactsActionTypes.ADD, (name, number) => ({
+const addContact = createAction('contacts/add', (name, number) => ({
   payload: {
     name,
     number,
     id: nanoid(),
   },
 }));
-const deleteContact = createAction(contactsActionTypes.DELETE);
-const filterContactsByName = createAction(contactsActionTypes.FILTER);
+const deleteContact = createAction('contacts/delete');
+const filterContactsByName = createAction('contacts/filter');
 
 const contactsActions = {
   addContact,
