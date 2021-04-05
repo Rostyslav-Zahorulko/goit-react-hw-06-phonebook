@@ -1,6 +1,7 @@
 import { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
+import contactsActions from '../../redux/contacts/contacts-actions';
 import './ContactForm.scss';
 
 class ContactForm extends Component {
@@ -10,6 +11,13 @@ class ContactForm extends Component {
   };
 
   static propTypes = {
+    contacts: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        number: PropTypes.string.isRequired,
+        id: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
     onSubmit: PropTypes.func.isRequired,
   };
 
@@ -21,10 +29,20 @@ class ContactForm extends Component {
 
   handleFormSubmit = event => {
     const { name, number } = this.state;
+    const { contacts, onSubmit } = this.props;
 
     event.preventDefault();
 
-    this.props.onSubmit(name, number);
+    const existedContactWithTheSameName = contacts.find(
+      contact => contact.name === name,
+    );
+
+    if (existedContactWithTheSameName !== undefined) {
+      alert(`${name} is already in contacts`);
+      return;
+    }
+
+    onSubmit(name, number);
 
     this.setState({ name: '', number: '' });
   };
@@ -67,8 +85,17 @@ class ContactForm extends Component {
   }
 }
 
+const mapStateToProps = ({ contacts }) => ({
+  contacts: contacts.items,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onSubmit: (name, number) =>
+    dispatch(contactsActions.addContact(name, number)),
+});
+
 ContactForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default ContactForm;
+export default connect(mapStateToProps, mapDispatchToProps)(ContactForm);
